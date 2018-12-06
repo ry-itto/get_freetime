@@ -5,7 +5,7 @@ require 'googleauth/stores/file_token_store'
 class Calender
   APPLICATION_NAME = '空き時間出力'.freeze
   OOB_URI = 'urn:ietf:wg:oauth:2.0:oob'.freeze
-  CREDENTIALS_PATH = 'credentials.json'.freeze
+  CREDENTIALS_PATH = '../credentials.json'.freeze
   TOKEN_PATH = 'token.yaml'.freeze
   SCOPE = Google::Apis::CalendarV3::AUTH_CALENDAR_READONLY
 
