@@ -1,7 +1,6 @@
 require 'google/apis/calendar_v3'
 require 'googleauth'
 require 'googleauth/stores/file_token_store'
-require 'date'
 
 class Calender
   APPLICATION_NAME = '空き時間出力'.freeze
@@ -54,7 +53,9 @@ class Calender
   #
   # @return イベントリスト
   def fetch_event_list(calender_id)
-    @calendar_service.list_events calender_id, single_events: true, order_by: 'startTime'
+    @calendar_service.list_events calender_id,
+                                  single_events: true,
+                                  order_by: 'startTime'
   end
 
   ##
@@ -81,11 +82,3 @@ class Calender
     @calendar_service.query_freebusy body
   end
 end
-
-calender = Calender.new
-
-calendar_id = 'primary'
-time_min = DateTime.parse('2018-12-03T00:00:00z')
-time_max = DateTime.parse('2018-12-04T00:00:00z')
-free_busy = calender.fetch_free_busy [calendar_id], time_min, time_max
-puts free_busy.calendars
