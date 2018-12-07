@@ -1,6 +1,7 @@
 require 'google/apis/calendar_v3'
 require 'googleauth'
 require 'googleauth/stores/file_token_store'
+require 'date'
 
 class Calender
   APPLICATION_NAME = '空き時間出力'.freeze
@@ -57,19 +58,24 @@ class Calender
   end
 
   ##
-  # TODO レスポンスの使用方法見直し
-  #
   # カレンダーIDのリスト，検索日付から空き時間を取得します。
   # API reference : https://developers.google.com/calendar/v3/reference/freebusy/query
   #
-  # @param calendar_id_list 対象のカレンダーIDのリスト
-  # @param time_min 検索日付(from)
-  # @param time_max 検索日付(to)
+  # @param calendar_id_list 対象のカレンダーIDのリスト Array<String>
+  # @param time_min 検索日付(from) DateTime
+  # @param time_max 検索日付(to) DateTime
   #
   # @return 空き時間オブジェクト(Google::Apis::CalendarV3::FreeBusyResponse)
   def fetch_free_busy(calendar_id_list, time_min, time_max)
+
+    # calendar_idの配列をFreeBusyRequestItemに詰め替える
+    request_items = []
+    calendar_id_list.each do |calendar_id|
+      request_items << Google::Apis::CalendarV3::FreeBusyRequestItem.new(id: calendar_id)
+    end
+
     body = Google::Apis::CalendarV3::FreeBusyRequest.new
-    body.items = calendar_id_list
+    body.items = request_items
     body.time_min = time_min
     body.time_max = time_max
     @calendar_service.query_freebusy body
@@ -78,8 +84,8 @@ end
 
 calender = Calender.new
 
-calendar_id = 'primary'
-time_min = '2018-12-03T00:00:00z'
-time_max = '2018-12-10T00:00:00z'
+calendar_id = 'ddvo53n31h5rpu1bq8j1g9lajjsdqqfo@import.calendar.google.com'
+time_min = DateTime.parse('2018-12-03T00:00:00z')
+time_max = DateTime.parse('2018-12-04T00:00:00z')
 free_busy = calender.fetch_free_busy [calendar_id], time_min, time_max
-puts free_busy.calendars[''].busy
+puts free_busy.calendars
