@@ -84,7 +84,7 @@ end
 
 calender = Calender.new
 
-calendar_id = 'ddvo53n31h5rpu1bq8j1g9lajjsdqqfo@import.calendar.google.com'
+calendar_id = 'primary'
 time_min = DateTime.parse('2018-12-03T00:00:00z')
 time_max = DateTime.parse('2018-12-04T00:00:00z')
 free_busy = calender.fetch_free_busy [calendar_id], time_min, time_max
