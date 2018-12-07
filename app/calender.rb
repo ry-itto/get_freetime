@@ -9,6 +9,12 @@ class Calender
   TOKEN_PATH = 'token.yaml'.freeze
   SCOPE = Google::Apis::CalendarV3::AUTH_CALENDAR_READONLY
 
+  def initialize
+    @calendar_service = Google::Apis::CalendarV3::CalendarService.new
+    @calendar_service.client_options.application_name = APPLICATION_NAME
+    @calendar_service.authorization = authorize
+  end
+
   ##
   # API使用時に認証します。
   #
@@ -37,16 +43,43 @@ class Calender
   #
   # @return カレンダーのリスト
   def fetch_calender_list
-    service = Google::Apis::CalendarV3::CalendarService.new
-    service.client_options.application_name = APPLICATION_NAME
-    service.authorization = authorize
+    @calendar_service.list_calendar_lists
+  end
 
-    service.list_calendar_lists
+  ##
+  # カレンダーIDからカレンダーに紐づくイベントのリストを取得します。
+  # API reference : https://developers.google.com/calendar/v3/reference/events/list
+  # @param calender_id カレンダーID
+  #
+  # @return イベントリスト
+  def fetch_event_list(calender_id)
+    @calendar_service.list_events calender_id, single_events: true, order_by: 'startTime'
+  end
+
+  ##
+  # TODO レスポンスの使用方法見直し
+  #
+  # カレンダーIDのリスト，検索日付から空き時間を取得します。
+  # API reference : https://developers.google.com/calendar/v3/reference/freebusy/query
+  #
+  # @param calendar_id_list 対象のカレンダーIDのリスト
+  # @param time_min 検索日付(from)
+  # @param time_max 検索日付(to)
+  #
+  # @return 空き時間オブジェクト(Google::Apis::CalendarV3::FreeBusyResponse)
+  def fetch_free_busy(calendar_id_list, time_min, time_max)
+    body = Google::Apis::CalendarV3::FreeBusyRequest.new
+    body.items = calendar_id_list
+    body.time_min = time_min
+    body.time_max = time_max
+    @calendar_service.query_freebusy body
   end
 end
 
 calender = Calender.new
 
-calender.fetch_calender_list.items.each do |item|
-  puts "Calender ID : #{item.id}, Summary : #{item.summary}"
-end
+calendar_id = 'primary'
+time_min = '2018-12-03T00:00:00z'
+time_max = '2018-12-10T00:00:00z'
+free_busy = calender.fetch_free_busy [calendar_id], time_min, time_max
+puts free_busy.calendars[''].busy
