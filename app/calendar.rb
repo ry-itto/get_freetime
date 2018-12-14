@@ -1,8 +1,11 @@
 require 'google/apis/calendar_v3'
 require 'googleauth'
 require 'googleauth/stores/file_token_store'
+require 'singleton'
 
-class Calender
+class Calendar
+  include Singleton
+
   APPLICATION_NAME = '空き時間出力'.freeze
   OOB_URI = 'urn:ietf:wg:oauth:2.0:oob'.freeze
   CREDENTIALS_PATH = '../credentials.json'.freeze
