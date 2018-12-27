@@ -11,20 +11,21 @@ class CalendarService
     @start_time = Time.parse settings['start_time']
     @end_time = Time.parse settings['end_time']
     @interval_time = Time.parse settings['interval_time']
+    @start_date = Date.parse settings['start_date']
+    @end_date = Date.parse settings['end_date']
 
   end
 
   ##
   # Google Calendar APIで取得したFreeBusyを元に空き時間を取得します。
   # @param calendar_id_list カレンダーIDのリスト
-  # @param free_busy_calender Google Calendar APIを使用して取得したFreeBusy
-  def calc_free_time(calendar_id_list, free_busy_calender)
+  def calc_free_time(calendar_id_list)
 
     free_time = []
     previous_datetime = nil
 
     calendar_id_list.each do |calendar_id|
-      free_busy_calender.calendars[calendar_id].busy.each do |busy_time|
+      fetch_free_time(calendar_id_list).calendars[calendar_id].busy.each do |busy_time|
         start_jst = busy_time.start + NINE_HOUR
         end_jst = busy_time.end + NINE_HOUR
 
@@ -39,7 +40,33 @@ class CalendarService
         previous_datetime = end_jst
       end
     end
-    free_time
+
+    target_dates = @start_date.upto(@end_date).to_a
+
+    uniq_array = free_time.map { |time| time[:start_time].to_date }.uniq
+    target_dates.each do |date|
+      next if uniq_array.include? date
+
+      start_time = DateTime.new date.year, date.month,
+                                date.day, @start_time.hour
+      end_time = DateTime.new date.year, date.month,
+                              date.day, @end_time.hour
+      free_time << { start_time: start_time, end_time: end_time }
+    end
+
+    free_time.sort_by { |time| time[:start_time] }
+  end
+
+  ##
+  # カレンダーIDのリストを受け取り，FreeBusyを取得します。
+  # @param calendar_id_list カレンダーIDのリスト
+  #
+  # @return Google Calendar APIを使用して取得したFreeBusy
+  def fetch_free_time(calendar_id_list)
+    calendar = Calendar.instance
+    calendar.fetch_free_busy(calendar_id_list,
+                             @start_date.to_datetime,
+                             @end_date.to_datetime)
   end
 
   ##
