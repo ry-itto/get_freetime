@@ -1,6 +1,8 @@
 require 'time'
 require 'yaml'
 
+##
+# カレンダー関係の処理を行うクラス
 class CalendarService
 
   # 9時間
