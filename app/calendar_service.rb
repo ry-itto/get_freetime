@@ -43,20 +43,7 @@ class CalendarService
       end
     end
 
-    target_dates = @start_date.upto(@end_date).to_a
-
-    uniq_array = free_time.map { |time| time[:start_time].to_date }.uniq
-    target_dates.each do |date|
-      next if uniq_array.include? date
-
-      start_time = DateTime.new date.year, date.month,
-                                date.day, @start_time.hour
-      end_time = DateTime.new date.year, date.month,
-                              date.day, @end_time.hour
-      free_time << { start_time: start_time, end_time: end_time }
-    end
-
-    free_time.sort_by { |time| time[:start_time] }
+    complete_free_days free_time
   end
 
   ##
@@ -83,5 +70,25 @@ class CalendarService
 
     # @type Integer
     interval
+  end
+
+  ##
+  # 指定した日付間に丸一日空いている日があった場合に補完し，ソートします。
+  #
+  def complete_free_days(free_time)
+    target_dates = @start_date.upto(@end_date).to_a
+
+    uniq_array = free_time.map { |time| time[:start_time].to_date }.uniq
+    target_dates.each do |date|
+      next if uniq_array.include? date
+
+      start_time = DateTime.new date.year, date.month,
+                                date.day, @start_time.hour
+      end_time = DateTime.new date.year, date.month,
+                              date.day, @end_time.hour
+      free_time << { start_time: start_time, end_time: end_time }
+    end
+
+    free_time.sort_by { |time| time[:start_time] }
   end
 end
