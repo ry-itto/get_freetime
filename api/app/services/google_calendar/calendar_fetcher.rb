@@ -8,8 +8,8 @@ class CalendarFetcher
 
   APPLICATION_NAME = '空き時間出力'.freeze
   OOB_URI = 'urn:ietf:wg:oauth:2.0:oob'.freeze
-  CREDENTIALS_PATH = '../credentials.json'.freeze
-  TOKEN_PATH = 'token.yaml'.freeze
+  CREDENTIALS_PATH = 'config/settings/credentials.json'.freeze
+  TOKEN_PATH = 'config/settings/token.yaml'.freeze
   SCOPE = Google::Apis::CalendarV3::AUTH_CALENDAR_READONLY
 
   def initialize

@@ -1,3 +1,4 @@
+require_relative '../google_calendar/calendar_fetcher'
 require 'time'
 require 'yaml'
 
@@ -8,13 +9,12 @@ class CalendarService
   # 9時間
   NINE_HOUR = Rational(3, 8)
 
-  def initialize
-    settings = YAML.load_file '../setting.yaml'
-    @start_time = Time.parse settings['start_time']
-    @end_time = Time.parse settings['end_time']
-    @interval_time = Time.parse settings['interval_time']
-    @start_date = Date.parse settings['start_date']
-    @end_date = Date.parse settings['end_date']
+  def initialize(start_date, end_date, start_time, end_time, interval_time)
+    @start_time = Time.parse start_time
+    @end_time = Time.parse end_time
+    @interval_time = Time.parse interval_time
+    @start_date = Date.parse start_date
+    @end_date = Date.parse end_date
 
   end
 
@@ -45,6 +45,8 @@ class CalendarService
 
     complete_free_days free_time
   end
+
+  private
 
   ##
   # カレンダーIDのリストを受け取り，FreeBusyを取得します。
