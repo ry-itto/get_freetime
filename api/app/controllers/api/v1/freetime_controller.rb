@@ -14,13 +14,13 @@ class Api::V1::FreetimeController < ApplicationController
     end_time = params[:end_time]
     interval_time = params[:interval_time]
 
-    if start_date.nil? || end_date.nil? || start_time.nil? || end_time.nil? || interval_time.nil?
+    unless start_date && end_date && start_time && end_time && interval_time
       render status: 400, json: { message: 'パラメータが不正です。' }
       return
     end
 
     service = CalendarService.new(start_date, end_date, start_time, end_time, interval_time)
-    result = service.calc_free_time @calendar_ids
+    result = service.calc_free_time
 
     render status: 200, json: result.to_json
   end
